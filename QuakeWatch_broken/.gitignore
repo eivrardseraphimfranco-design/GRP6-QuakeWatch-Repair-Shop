@@ -1,0 +1,9 @@
+__pycache__/
+.pytest_cache/
+.vscode/
+*.zip
+data/raw/
+data/clean/
+data/features/
+figures/
+.vscode/
