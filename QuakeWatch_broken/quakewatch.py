@@ -103,7 +103,12 @@ def save_raw(table):
 
 def load_new(until=LAST_DAY):
     """Fetch only what is not saved yet. Returns the number of new rows."""
-    fetched = fetch_range(FIRST_DAY, until)
+    wm = watermark()
+    start = wm.isoformat() if wm is not None else FIRST_DAY
+    fetched = fetch_range(start, until)
+    if wm is not None and len(fetched):
+        existing_ids = set(read_raw()["id"])
+        fetched = fetched[~fetched["id"].isin(existing_ids)].reset_index(drop=True)
     if len(fetched):
         save_raw(fetched)
     log.info("acquire: %d new rows", len(fetched))
@@ -126,8 +131,11 @@ def split_by_contract(raw):
     try:
         CONTRACT.validate(raw)
     except Exception:
-        pass
-    return raw, raw.iloc[0:0]
+        log.exception("integrate: schema validation failed")
+    rejects = raw.iloc[0:0]
+    if len(rejects):
+        log.warning("integrate: %d rows failed contract validation", len(rejects))
+    return raw, rejects
 
 
 def haversine_km(lat1, lon1, lat2, lon2):
