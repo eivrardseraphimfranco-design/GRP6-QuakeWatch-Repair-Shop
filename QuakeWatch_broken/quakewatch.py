@@ -129,14 +129,16 @@ CONTRACT = pa.DataFrameSchema({
 def split_by_contract(raw):
     """Return (good rows, rejected rows)."""
     try:
-        CONTRACT.validate(raw)
-    except Exception:
+        CONTRACT.validate(raw, lazy=True)
+        return raw, raw.iloc[0:0]
+    except pa.errors.SchemaErrors as err:
         log.exception("integrate: schema validation failed")
-    rejects = raw.iloc[0:0]
-    if len(rejects):
-        log.warning("integrate: %d rows failed contract validation", len(rejects))
-    return raw, rejects
-
+        bad_idx = err.failure_cases["index"].dropna().unique()
+        rejects = raw.loc[raw.index.isin(bad_idx)].copy()
+        good = raw.loc[~raw.index.isin(bad_idx)].copy()
+        if len(rejects):
+            log.warning("integrate: %d rows failed contract validation", len(rejects))
+        return good, rejects
 
 def haversine_km(lat1, lon1, lat2, lon2):
     """Great-circle distance in km. Follows NumPy broadcasting."""

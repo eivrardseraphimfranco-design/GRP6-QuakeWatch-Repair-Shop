@@ -106,3 +106,16 @@ def test_incident_5_idempotent_load_and_logging(project, caplog):
     assert second == 0
     assert qw.read_raw()["id"].is_unique
     assert "acquire: 0 new rows" in caplog.text
+
+def test_incident_6_contract_quarantines_invalid_rows(loaded):
+    """Incident 6: split_by_contract must set aside invalid rows into rejects.csv."""
+    bad = qw.read_raw().head(1).copy()
+    bad["id"] = "incident6-invalid-row"
+    bad["depth_km"] = -10.0
+    qw.save_raw(bad)
+
+    clean = qw.integrate()
+    rejects = pd.read_csv(qw.CLEAN / "rejects.csv")
+
+    assert "incident6-invalid-row" not in set(clean["id"])
+    assert "incident6-invalid-row" in set(rejects["id"])
