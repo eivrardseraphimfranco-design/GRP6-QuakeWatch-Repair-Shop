@@ -1,0 +1,13 @@
+Study Group: Group 6
+
+Members and Contributions:
+- Eivrard Seraphim Franco (Member 1): Fixed Incident 1 (depth_km column reference in features_stage()), wrote test_features_stage_uses_depth_km, and coordinated branch integration.
+- Ralph Aron Bonifacio (Member 2): Fixed Incident 2 (UTC to Asia/Manila timezone conversion) and Incident 6 (Pandera lazy contract validation and quarantine to rejects.csv), wrote test_incident_2_manila_time_conversion and test_incident_6_contract_quarantines_invalid_rows, and compiled REPAIR_LOG.md.
+- Josef Jayden Nepomuceno (Member 3): Fixed Incident 3 (MAG_BINS upper threshold for Moderate so 6.0 classifies as Strong) and wrote parametrized test_incident_3_mag_class_boundaries.
+- Andrei Karl Dela Cruz (Member 4): Fixed Incident 4 (latitude and longitude argument order in nearest_city()) and wrote fake API test_incident_4_nearest_city_mindanao_via_fake_api.
+- Matthew Zachary Medallon (Member 5): Fixed Incident 5 (incremental watermark ingestion and duplicate ID filtering in load_new()), configured pipeline logging to logs/run.log, and wrote caplog test_incident_5_idempotent_load_and_logging.
+
+AI Tools and External Help Used:
+- Tool: Google Gemini
+- Purpose: Used as a debugging and workflow assistant to review error tracebacks, confirm root causes across the 6 incidents, structure pytest guarding tests (parametrize, fake API via responses, caplog), and format REPAIR_LOG.md and disclosure.txt.
+- Self-Verification: Every fix was applied incrementally and verified independently by running the supplied pytest suite (32 passed) and executing run.py twice locally to confirm idempotent counts and generated logs/outputs.

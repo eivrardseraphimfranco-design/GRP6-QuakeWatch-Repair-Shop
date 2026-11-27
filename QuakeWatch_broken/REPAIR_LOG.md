@@ -28,7 +28,7 @@ Study group: Group 6   Members: Eivrard Seraphim Franco, Ralph Aron Bonifacio, J
 
 | Where (function) | Level | Message | Why this level |
 | --- | --- | --- | --- |
-| `run.py` (module setup via `logging.basicConfig`) | `INFO` | Configured `logging.FileHandler("quakewatch.log")` alongside `StreamHandler` with format `"%(asctime)s %(levelname)s %(name)s %(message)s"`. | Captures standard stage-by-stage pipeline progress (`acquire`, `integrate`, `features`, `report`) in both console and `quakewatch.log`. |
+| `run.py` (module setup via `logging.basicConfig`) | `INFO` | Configured `logging.FileHandler("logs/run.log")` alongside `StreamHandler` with format `"%(asctime)s %(levelname)s %(name)s %(message)s"`. | Captures standard stage-by-stage pipeline progress (`acquire`, `integrate`, `features`, `report`) in both console and `logs/run.log`. |
 | `quakewatch.py`, `split_by_contract()` | `ERROR` (`log.exception`) | `"integrate: schema validation failed"` | Records the full `SchemaErrors` traceback whenever incoming raw data violates the Pandera data contract. |
 | `quakewatch.py`, `split_by_contract()` | `WARNING` | `"integrate: %d rows failed contract validation"` | Alerts operators that invalid rows were quarantined to `rejects.csv` while allowing clean rows to continue through the pipeline. |
 
