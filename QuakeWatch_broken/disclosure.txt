@@ -10,4 +10,4 @@ Members and Contributions:
 AI Tools and External Help Used:
 - Tool: Google Gemini
 - Purpose: Used as a debugging and workflow assistant to review error tracebacks, confirm root causes across the 6 incidents, structure pytest guarding tests (parametrize, fake API via responses, caplog), and format REPAIR_LOG.md and disclosure.txt.
-- Self-Verification: Every fix was applied incrementally and verified independently by running the supplied pytest suite (32 passed) and executing run.py twice locally to confirm idempotent counts and generated logs/outputs.
+- Self-Verification: Every fix was applied incrementally and verified independently by running the supplied pytest suite (33 passed) and executing run.py twice locally to confirm idempotent counts and generated logs/outputs.

@@ -12,7 +12,6 @@ Study group: Group 6   Members: Eivrard Seraphim Franco, Ralph Aron Bonifacio, J
 | 4 | Mindanao and southwestern Luzon earthquakes were assigned to Tuguegarao (`C04`) instead of Butuan City (`C10`) and Manila (`C01`). | `quakewatch.py`, `nearest_city()`, line 142: passed `events["longitude"]` as `lat1` and `events["latitude"]` as `lon1` into `haversine_km()`. | Swapped the event arguments so `events["latitude"]` is passed first and `events["longitude"]` second. | `test_incident_4_nearest_city_mindanao_via_fake_api` | Andrei Karl Dela Cruz |
 | 5 | Running `load_new()` or `run_pipeline()` twice re-fetched all 462 events and created duplicate event IDs in `data/raw`. | `quakewatch.py`, `load_new()`, line 105: always queried from `FIRST_DAY` instead of checking `watermark()` and skipping existing IDs. | Queried from `watermark().isoformat()` when raw files exist and filtered out existing IDs via `~fetched["id"].isin(existing_ids)`. | `test_incident_5_idempotent_load_and_logging` | Matthew Zachary Medallon |
 | 6 | Invalid rows (such as negative `depth_km`) passed into `data/clean/events.parquet` instead of being quarantined to `rejects.csv`. | `quakewatch.py`, `split_by_contract()`, lines 131–135: caught and ignored validation errors with `pass` and always returned all `raw` rows with an empty `rejects` DataFrame. | Validated with `CONTRACT.validate(raw, lazy=True)`, caught `pa.errors.SchemaErrors`, and split failing indices from `err.failure_cases["index"]` into `rejects` and `good`. | `test_incident_6_contract_quarantines_invalid_rows` | Ralph Aron Bonifacio |
-| `test_rejected_rows_log_a_warning` | `caplog` | Proves a `WARNING` (`"rows failed contract validation"`) is logged when invalid rows are quarantined | Yes | Ralph Aron Bonifacio |
 
 ## Our own tests (in `tests/test_group.py`)
 
@@ -24,6 +23,7 @@ Study group: Group 6   Members: Eivrard Seraphim Franco, Ralph Aron Bonifacio, J
 | `test_incident_4_nearest_city_mindanao_via_fake_api` | fake API (`@responses.activate`) | End-to-end `load_new()` + `integrate()` maps Mindanao coordinates `[126.4, 8.5, 32.0]` to Butuan City (`C10`). | Yes | Andrei Karl Dela Cruz |
 | `test_incident_5_idempotent_load_and_logging` | `caplog` | Calling `load_new()` a second time adds `0` duplicate rows, preserves unique IDs, and emits `acquire: 0 new rows`. | Yes | Matthew Zachary Medallon |
 | `test_incident_6_contract_quarantines_invalid_rows` | `pytest` fixture (`loaded`) | `split_by_contract()` excludes invalid rows (`depth_km = -10.0`) from `clean` and writes them to `data/clean/rejects.csv`. | Yes | Ralph Aron Bonifacio |
+| `test_rejected_rows_log_a_warning` | `caplog` | Proves a `WARNING` (`"rows failed contract validation"`) is logged when invalid rows are quarantined. | Yes | Ralph Aron Bonifacio |
 
 ## Logging we added
 
