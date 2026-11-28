@@ -1,3 +1,4 @@
+from pathlib import Path
 import logging
 import pandas as pd
 import pytest
@@ -59,6 +60,7 @@ def test_incident_3_mag_class_boundaries(mag, expected):
 
 @responses.activate
 def test_incident_4_nearest_city_mindanao_via_fake_api(tmp_path, monkeypatch):
+    monkeypatch.chdir(Path(qw.__file__).resolve().parent)
     """Incident 4: nearest_city must pass (lat, lon) in order so Mindanao events map to Butuan (C10)."""
     raw_dir = tmp_path / "raw"
     clean_dir = tmp_path / "clean"
@@ -119,3 +121,15 @@ def test_incident_6_contract_quarantines_invalid_rows(loaded):
 
     assert "incident6-invalid-row" not in set(clean["id"])
     assert "incident6-invalid-row" in set(rejects["id"])
+def test_rejected_rows_log_a_warning(loaded, caplog):
+    """A row with depth -5 must be rejected and logged at WARNING."""
+    bad = qw.read_raw().head(1).copy()
+    bad["id"] = "warn-test-bad-row"
+    bad["depth_km"] = -5.0
+    qw.save_raw(bad)
+
+    with caplog.at_level(logging.WARNING, logger="quakewatch"):
+        qw.integrate()
+
+    warnings = [r for r in caplog.records if r.levelno == logging.WARNING]
+    assert any("rows failed contract validation" in r.getMessage() for r in warnings)
